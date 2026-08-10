@@ -1,0 +1,7 @@
+DirectoryIndex index.php index.html
+
+RewriteEngine On
+
+# Preserve old bookmarked/static links after the move to PHP-rendered pages.
+RewriteRule ^index\.html$ index.php [L]
+RewriteRule ^members/([a-zA-Z0-9_-]+)\.html$ members/view.php?slug=$1 [L,QSA]

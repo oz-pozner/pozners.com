@@ -7,6 +7,7 @@
     document.querySelectorAll('.lang-he').forEach((el) => el.classList.toggle('hidden', !isHebrew));
     document.querySelectorAll('.lang-en').forEach((el) => el.classList.toggle('hidden', isHebrew));
     document.documentElement.lang = lang;
+    document.documentElement.dir = isHebrew ? 'rtl' : 'ltr';
     localStorage.setItem('pozner-lang', lang);
     if (toggle) {
       toggle.textContent = isHebrew ? 'English' : 'עברית';
