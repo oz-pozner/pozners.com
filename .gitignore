@@ -8,3 +8,6 @@
 # Editor folders
 .vscode/
 .idea/
+
+# Local dev server logs
+scripts/dev-server.log

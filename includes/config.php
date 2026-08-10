@@ -1,10 +1,16 @@
 <?php
+require_once __DIR__ . '/env.php';
+
 // Central configuration for the admin backend.
 // Not directly web-accessible (blocked via .htaccess).
+//
+// Credentials live in .env at the project root - a gitignored file that is
+// never committed and, in production, is uploaded to the server directly
+// (never through git). See .env.example for the required keys. This file
+// only reads them; it never hardcodes a username, password, or hash.
 
-define('ADMIN_USERNAME', 'PozAdmin');
-// bcrypt hash of the admin password - never store the plaintext password.
-define('ADMIN_PASSWORD_HASH', '$2y$12$oNowe1WkKO0w4oputPWrROAPWhDYHmdoCmM.w8njFe3jsCrKrPg0K');
+define('ADMIN_USERNAME', getenv('ADMIN_USERNAME') ?: '');
+define('ADMIN_PASSWORD_HASH', getenv('ADMIN_PASSWORD_HASH') ?: '');
 
 define('BASE_DIR', dirname(__DIR__));
 define('CONTENT_DIR', BASE_DIR . '/content');

@@ -1,6 +1,37 @@
 <?php
 require_once __DIR__ . '/includes/content.php';
+require_once __DIR__ . '/includes/seo.php';
 $members = content_load_members();
+
+$homeDescription = 'The Pozner family — Oz, Havi, Ron and Yuval — from Kiryat Ono, Israel. A bilingual (Hebrew/English) family site with profiles and contact details.';
+$homeUrl = seo_absolute_url('/');
+$personList = array_map(function ($m) {
+    $entry = [
+        '@type' => 'Person',
+        'name' => $m['full_name_en'] ?: $m['name_en'],
+        'alternateName' => $m['full_name_he'] ?: $m['name_he'],
+        'url' => seo_absolute_url('members/' . $m['slug'] . '.html'),
+    ];
+    if (!empty($m['role_en'])) {
+        $entry['jobTitle'] = $m['role_en'];
+    }
+    if (!empty($m['bio_en'])) {
+        $entry['description'] = content_excerpt($m['bio_en'], 300);
+    }
+    if (!empty($m['photo'])) {
+        $entry['image'] = str_starts_with($m['photo'], 'http') ? $m['photo'] : seo_absolute_url($m['photo']);
+    }
+    return $entry;
+}, $members);
+$homeJsonLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'name' => seo_site_title(),
+    'url' => $homeUrl,
+    'description' => $homeDescription,
+    'inLanguage' => ['he', 'en'],
+    'about' => ['@type' => 'ItemList', 'itemListElement' => $personList],
+];
 ?>
 <!DOCTYPE html>
 <html lang="he" class="scroll-smooth" dir="rtl">
@@ -8,8 +39,13 @@ $members = content_load_members();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-    content="The Pozner family landing page in Hebrew and English, featuring Oz, Havi, Ron and Yuval from Kiryat Ono, Israel." />
+  <?php seo_render([
+      'title' => 'Pozner Family | עוז, חווי, רון, יובל',
+      'description' => $homeDescription,
+      'url' => $homeUrl,
+      'type' => 'website',
+      'jsonLd' => $homeJsonLd,
+  ]); ?>
   <title>Pozner Family | עוז, חווי, רון, יובל</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -32,6 +68,7 @@ $members = content_load_members();
       <a href="index.php" class="text-lg font-semibold tracking-wide text-white">Pozner Family</a>
       <div class="hidden items-center gap-6 md:flex">
         <a href="#family" class="text-sm text-slate-300 transition hover:text-teal-300">Family</a>
+        <a href="#videos" class="text-sm text-slate-300 transition hover:text-teal-300">Videos</a>
         <a href="#contact" class="text-sm text-slate-300 transition hover:text-teal-300">Contact</a>
         <a href="#forms" class="text-sm text-slate-300 transition hover:text-teal-300">Forms</a>
       </div>
@@ -127,6 +164,34 @@ $members = content_load_members();
             class="mt-5 inline-flex text-sm font-medium text-teal-300 hover:text-teal-200">Read more →</a>
         </article>
         <?php endforeach; ?>
+      </div>
+    </section>
+
+    <section id="videos" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
+      <div class="mb-8">
+        <div class="lang-he">
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">סרטונים</p>
+          <h2 class="mt-2 text-3xl font-semibold text-white">ערוץ היוטיוב של המשפחה</h2>
+          <p class="mt-2 max-w-2xl text-sm text-slate-400">חידות, שחמט ותוכן משעשע מהערוץ
+            <a href="https://www.youtube.com/@PoznerPuzzles" target="_blank" rel="noopener"
+              class="text-teal-300 hover:text-teal-200">Pozner's Puzzles</a>.
+          </p>
+        </div>
+        <div class="lang-en hidden">
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">Videos</p>
+          <h2 class="mt-2 text-3xl font-semibold text-white">Family YouTube Channel</h2>
+          <p class="mt-2 max-w-2xl text-sm text-slate-400">Puzzles, chess, and fun from the
+            <a href="https://www.youtube.com/@PoznerPuzzles" target="_blank" rel="noopener"
+              class="text-teal-300 hover:text-teal-200">Pozner's Puzzles</a> channel.
+          </p>
+        </div>
+      </div>
+      <div class="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/70 p-2 shadow-lg shadow-black/20 sm:p-3">
+        <iframe class="aspect-video w-full rounded-2xl border-0"
+          src="https://www.youtube-nocookie.com/embed/videoseries?list=UUXgitHqP4wfeMKwcXmT14xg&loop=1&rel=0"
+          title="Pozner's Puzzles YouTube channel" loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
       </div>
     </section>
 

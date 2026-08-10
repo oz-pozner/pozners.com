@@ -63,13 +63,16 @@ function content_slugify(string $text): string
 }
 
 /**
- * Plain-text excerpt of a rich-text (HTML) bio, for use in the home page cards.
+ * Plain-text excerpt of a rich-text (HTML) bio, used for home page cards
+ * and SEO/AI meta descriptions. Tags are replaced with a space (not just
+ * stripped) so e.g. "</p><h2>" doesn't glue two words together.
  */
 function content_excerpt(string $html, int $maxChars = 160): string
 {
-    $text = trim(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-    $text = preg_replace('/\s+/u', ' ', $text);
-    if (function_exists('mb_strlen') && mb_strlen($text, 'UTF-8') > $maxChars) {
+    $text = preg_replace('/<[^>]+>/', ' ', $html);
+    $text = html_entity_decode(trim((string) $text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $text = trim(preg_replace('/\s+/u', ' ', $text));
+    if (mb_strlen($text, 'UTF-8') > $maxChars) {
         $text = mb_substr($text, 0, $maxChars, 'UTF-8') . '…';
     }
     return $text;

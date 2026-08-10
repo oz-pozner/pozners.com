@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/content.php';
+require_once __DIR__ . '/../includes/seo.php';
 
 $slug = isset($_GET['slug']) ? preg_replace('/[^a-z0-9-]/', '', strtolower($_GET['slug'])) : '';
 $members = content_load_members();
@@ -13,6 +14,7 @@ if (!$member) {
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex" />
   <title>Not found | לא נמצא</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -28,6 +30,32 @@ if (!$member) {
 <?php
     exit;
 }
+
+$memberTitle = ($member['full_name_he'] ?? $member['name_he'] ?? '') . ' | ' . ($member['full_name_en'] ?? $member['name_en'] ?? '');
+$memberUrl = seo_absolute_url('members/' . $member['slug'] . '.html');
+$memberDescription = content_excerpt($member['bio_en'] ?: $member['bio_he'] ?? '', 300);
+$memberImage = !empty($member['photo'])
+    ? (str_starts_with($member['photo'], 'http') ? $member['photo'] : seo_absolute_url($member['photo']))
+    : '';
+$memberJsonLd = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Person',
+    'name' => $member['full_name_en'] ?: $member['name_en'],
+    'alternateName' => $member['full_name_he'] ?: $member['name_he'],
+    'url' => $memberUrl,
+];
+if (!empty($member['role_en'])) {
+    $memberJsonLd['jobTitle'] = $member['role_en'];
+}
+if ($memberDescription !== '') {
+    $memberJsonLd['description'] = $memberDescription;
+}
+if ($memberImage !== '') {
+    $memberJsonLd['image'] = $memberImage;
+}
+if (!empty($member['contact_email'])) {
+    $memberJsonLd['email'] = $member['contact_email'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -35,7 +63,15 @@ if (!$member) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><?= htmlspecialchars($member['full_name_he'] ?? $member['name_he'] ?? '') ?> | <?= htmlspecialchars($member['full_name_en'] ?? $member['name_en'] ?? '') ?></title>
+  <?php seo_render([
+      'title' => $memberTitle,
+      'description' => $memberDescription,
+      'url' => $memberUrl,
+      'image' => $memberImage,
+      'type' => 'profile',
+      'jsonLd' => $memberJsonLd,
+  ]); ?>
+  <title><?= htmlspecialchars($memberTitle) ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 

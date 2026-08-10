@@ -8,7 +8,9 @@ if (admin_is_logged_in()) {
 }
 
 $error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!admin_credentials_configured()) {
+    $error = 'Admin login is not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD_HASH in .env (see .env.example).';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!admin_verify_csrf($_POST['csrf_token'] ?? null)) {
         $error = 'Session expired, please try again. | הפעולה פגה, נסו שוב.';
     } elseif (admin_attempt_login($_POST['username'] ?? '', $_POST['password'] ?? '')) {

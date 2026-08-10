@@ -27,9 +27,17 @@ function admin_require_login(): void
     }
 }
 
+function admin_credentials_configured(): bool
+{
+    return ADMIN_USERNAME !== '' && ADMIN_PASSWORD_HASH !== '';
+}
+
 function admin_attempt_login(string $username, string $password): bool
 {
     admin_session_start();
+    if (!admin_credentials_configured()) {
+        return false;
+    }
     if (hash_equals(ADMIN_USERNAME, $username) && password_verify($password, ADMIN_PASSWORD_HASH)) {
         session_regenerate_id(true);
         $_SESSION['admin_logged_in'] = true;
