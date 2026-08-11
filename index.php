@@ -2,6 +2,8 @@
 require_once __DIR__ . '/includes/content.php';
 require_once __DIR__ . '/includes/seo.php';
 $members = content_load_members();
+$site = content_load_site();
+$pages = content_load_pages();
 
 $homeDescription = 'The Pozner family — Oz, Havi, Ron and Yuval — from Kiryat Ono, Israel. A bilingual (Hebrew/English) family site with profiles and contact details.';
 $homeUrl = seo_absolute_url('/');
@@ -47,6 +49,7 @@ $homeJsonLd = [
       'jsonLd' => $homeJsonLd,
   ]); ?>
   <title>Pozner Family | עוז, חווי, רון, יובל</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -69,31 +72,48 @@ $homeJsonLd = [
       <div class="hidden items-center gap-6 md:flex">
         <a href="#family" class="text-sm text-slate-300 transition hover:text-teal-300">Family</a>
         <a href="#videos" class="text-sm text-slate-300 transition hover:text-teal-300">Videos</a>
+        <?php foreach ($pages as $page): if (empty($page['show_in_nav'])) continue; ?>
+        <a href="pages/<?= htmlspecialchars($page['slug']) ?>.html"
+          class="text-sm text-slate-300 transition hover:text-teal-300"><?= htmlspecialchars($page['nav_label'] ?: $page['title_en']) ?></a>
+        <?php endforeach; ?>
         <a href="#contact" class="text-sm text-slate-300 transition hover:text-teal-300">Contact</a>
         <a href="#forms" class="text-sm text-slate-300 transition hover:text-teal-300">Forms</a>
       </div>
-      <button id="lang-toggle"
-        class="rounded-full border border-teal-400/40 px-3 py-2 text-sm font-medium text-teal-300 transition hover:bg-teal-400/10">English</button>
+      <div class="flex items-center gap-2">
+        <button id="lang-toggle"
+          class="rounded-full border border-teal-400/40 px-3 py-2 text-sm font-medium text-teal-300 transition hover:bg-teal-400/10">English</button>
+        <button id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu"
+          class="rounded-full border border-white/15 p-2.5 text-slate-200 transition hover:border-teal-300 hover:text-teal-300 md:hidden">
+          <i class="fa-solid fa-bars text-base"></i>
+        </button>
+      </div>
     </nav>
+    <div id="mobile-menu" class="hidden border-t border-white/10 px-4 py-4 md:hidden">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4">
+        <a href="#family" class="text-sm text-slate-300 transition hover:text-teal-300">Family</a>
+        <a href="#videos" class="text-sm text-slate-300 transition hover:text-teal-300">Videos</a>
+        <?php foreach ($pages as $page): if (empty($page['show_in_nav'])) continue; ?>
+        <a href="pages/<?= htmlspecialchars($page['slug']) ?>.html"
+          class="text-sm text-slate-300 transition hover:text-teal-300"><?= htmlspecialchars($page['nav_label'] ?: $page['title_en']) ?></a>
+        <?php endforeach; ?>
+        <a href="#contact" class="text-sm text-slate-300 transition hover:text-teal-300">Contact</a>
+        <a href="#forms" class="text-sm text-slate-300 transition hover:text-teal-300">Forms</a>
+      </div>
+    </div>
   </header>
 
   <main>
     <section class="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-28">
       <div class="space-y-6">
         <div class="lang-he">
-          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">משפחה • קריית אונו</p>
-          <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl">ברוכים הבאים לאתר משפחת פוזנר</h1>
-          <p class="max-w-2xl text-lg text-slate-300">
-            משפחה חמה, יצירתית ומחוברת, שמביאה יחד אהבה, מקצוענות, וניהול חיים בהרמוניה ברחבי ישראל.
-          </p>
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['hero_kicker_he']) ?></p>
+          <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl"><?= htmlspecialchars($site['hero_title_he']) ?></h1>
+          <p class="max-w-2xl text-lg text-slate-300"><?= htmlspecialchars($site['hero_subtitle_he']) ?></p>
         </div>
         <div class="lang-en hidden">
-          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">Family • Kiryat Ono</p>
-          <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl">Welcome to the Pozner family</h1>
-          <p class="max-w-2xl text-lg text-slate-300">
-            A warm, creative, and connected family that brings together love, professionalism, and meaningful living
-            across Israel.
-          </p>
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['hero_kicker_en']) ?></p>
+          <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl"><?= htmlspecialchars($site['hero_title_en']) ?></h1>
+          <p class="max-w-2xl text-lg text-slate-300"><?= htmlspecialchars($site['hero_subtitle_en']) ?></p>
         </div>
         <div class="flex flex-wrap gap-3">
           <a href="#family"
@@ -106,36 +126,37 @@ $homeJsonLd = [
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
           <div class="lang-he">
             <p class="text-sm text-slate-400">כתובת</p>
-            <p class="mt-2 text-xl font-semibold text-white">יצחק רבין 5, דירה 11, קריית אונו</p>
+            <p class="mt-2 text-xl font-semibold text-white"><?= htmlspecialchars($site['address_he']) ?></p>
           </div>
           <div class="lang-en hidden">
             <p class="text-sm text-slate-400">Address</p>
-            <p class="mt-2 text-xl font-semibold text-white">Yitzhak Rabin 5, Apt 11, Kiryat Ono</p>
+            <p class="mt-2 text-xl font-semibold text-white"><?= htmlspecialchars($site['address_en']) ?></p>
           </div>
         </div>
       </div>
 
+      <?php if (!empty($site['hero_image'])): ?>
       <div class="overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-teal-500/10">
-        <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80"
+        <img src="<?= htmlspecialchars($site['hero_image']) ?>"
           alt="Family portrait in a warm home setting" class="h-full w-full object-cover" />
       </div>
+      <?php endif; ?>
     </section>
 
     <section id="family" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
       <div class="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div class="lang-he">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">המשפחה</p>
-            <h2 class="text-3xl font-semibold text-white">עוז, חווי, רון ויובל</h2>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['family_kicker_he']) ?></p>
+            <h2 class="text-3xl font-semibold text-white"><?= htmlspecialchars($site['family_title_he']) ?></h2>
           </div>
           <div class="lang-en hidden">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">The Family</p>
-            <h2 class="text-3xl font-semibold text-white">Oz, Havi, Ron and Yuval</h2>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['family_kicker_en']) ?></p>
+            <h2 class="text-3xl font-semibold text-white"><?= htmlspecialchars($site['family_title_en']) ?></h2>
           </div>
         </div>
-        <div class="lang-he text-sm text-slate-400">כל אחד עם מסלול אישי, כישרון וערך ייחודי.</div>
-        <div class="lang-en hidden text-sm text-slate-400">Each member brings a unique path, talent, and contribution.
-        </div>
+        <div class="lang-he text-sm text-slate-400"><?= htmlspecialchars($site['family_tagline_he']) ?></div>
+        <div class="lang-en hidden text-sm text-slate-400"><?= htmlspecialchars($site['family_tagline_en']) ?></div>
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -170,29 +191,31 @@ $homeJsonLd = [
     <section id="videos" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
       <div class="mb-8">
         <div class="lang-he">
-          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">סרטונים</p>
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><i class="fa-brands fa-youtube"></i> סרטונים</p>
           <h2 class="mt-2 text-3xl font-semibold text-white">ערוץ היוטיוב של המשפחה</h2>
           <p class="mt-2 max-w-2xl text-sm text-slate-400">חידות, שחמט ותוכן משעשע מהערוץ
-            <a href="https://www.youtube.com/@PoznerPuzzles" target="_blank" rel="noopener"
-              class="text-teal-300 hover:text-teal-200">Pozner's Puzzles</a>.
+            <a href="<?= htmlspecialchars($site['video_channel_url']) ?>" target="_blank" rel="noopener"
+              class="text-teal-300 hover:text-teal-200"><?= htmlspecialchars($site['video_channel_name']) ?></a>.
           </p>
         </div>
         <div class="lang-en hidden">
-          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">Videos</p>
+          <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><i class="fa-brands fa-youtube"></i> Videos</p>
           <h2 class="mt-2 text-3xl font-semibold text-white">Family YouTube Channel</h2>
           <p class="mt-2 max-w-2xl text-sm text-slate-400">Puzzles, chess, and fun from the
-            <a href="https://www.youtube.com/@PoznerPuzzles" target="_blank" rel="noopener"
-              class="text-teal-300 hover:text-teal-200">Pozner's Puzzles</a> channel.
+            <a href="<?= htmlspecialchars($site['video_channel_url']) ?>" target="_blank" rel="noopener"
+              class="text-teal-300 hover:text-teal-200"><?= htmlspecialchars($site['video_channel_name']) ?></a> channel.
           </p>
         </div>
       </div>
+      <?php if (!empty($site['video_playlist_id'])): ?>
       <div class="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/70 p-2 shadow-lg shadow-black/20 sm:p-3">
         <iframe class="aspect-video w-full rounded-2xl border-0"
-          src="https://www.youtube-nocookie.com/embed/videoseries?list=UUXgitHqP4wfeMKwcXmT14xg&loop=1&rel=0"
-          title="Pozner's Puzzles YouTube channel" loading="lazy"
+          src="https://www.youtube-nocookie.com/embed/videoseries?list=<?= htmlspecialchars($site['video_playlist_id']) ?>&loop=1&rel=0"
+          title="<?= htmlspecialchars($site['video_channel_name']) ?> YouTube channel" loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
       </div>
+      <?php endif; ?>
     </section>
 
     <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
@@ -200,34 +223,31 @@ $homeJsonLd = [
         class="grid gap-8 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-8 lg:grid-cols-[1fr_0.8fr]">
         <div>
           <div class="lang-he">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">על הבית</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">משפחה שמכבדת ערכים, חינוך ותנועה משותפת</h2>
-            <p class="mt-4 max-w-2xl text-slate-400">המשפחה נשענת על קשר, חינוך, מעורבות, התפתחות, וסביבה שמאפשרת לכל
-              אחד למצוא את קולו.</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['about_kicker_he']) ?></p>
+            <h2 class="mt-2 text-3xl font-semibold text-white"><?= htmlspecialchars($site['about_title_he']) ?></h2>
+            <p class="mt-4 max-w-2xl text-slate-400"><?= htmlspecialchars($site['about_body_he']) ?></p>
           </div>
           <div class="lang-en hidden">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">About the Home</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">A family grounded in values, education, and shared growth
-            </h2>
-            <p class="mt-4 max-w-2xl text-slate-400">The family is built on connection, education, engagement, and a
-              home environment that allows everyone to find their own voice.</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['about_kicker_en']) ?></p>
+            <h2 class="mt-2 text-3xl font-semibold text-white"><?= htmlspecialchars($site['about_title_en']) ?></h2>
+            <p class="mt-4 max-w-2xl text-slate-400"><?= htmlspecialchars($site['about_body_en']) ?></p>
           </div>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
           <div class="lang-he">
             <h3 class="text-xl font-semibold text-white">שאלות נפוצות</h3>
             <ul class="mt-4 space-y-3 text-sm text-slate-400">
-              <li>• כתובת: יצחק רבין 5, דירה 11, קריית אונו</li>
-              <li>• דוא"ל: oz@pozners.com</li>
-              <li>• קשר למפגש: הזמינו פגישה דרך הטופס</li>
+              <li>• כתובת: <?= htmlspecialchars($site['address_he']) ?></li>
+              <li>• דוא"ל: <?= htmlspecialchars(getenv('CONTACT_EMAIL') ?: '') ?></li>
+              <li>• <?= htmlspecialchars($site['meeting_note_he']) ?></li>
             </ul>
           </div>
           <div class="lang-en hidden">
             <h3 class="text-xl font-semibold text-white">Quick details</h3>
             <ul class="mt-4 space-y-3 text-sm text-slate-400">
-              <li>• Address: Yitzhak Rabin 5, Apartment 11, Kiryat Ono</li>
-              <li>• Email: oz@pozners.com</li>
-              <li>• Meeting requests can be booked through the form below</li>
+              <li>• Address: <?= htmlspecialchars($site['address_en']) ?></li>
+              <li>• Email: <?= htmlspecialchars(getenv('CONTACT_EMAIL') ?: '') ?></li>
+              <li>• <?= htmlspecialchars($site['meeting_note_en']) ?></li>
             </ul>
           </div>
         </div>
@@ -238,20 +258,21 @@ $homeJsonLd = [
       <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div class="rounded-3xl border border-white/10 bg-slate-900/70 p-8">
           <div class="lang-he">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">יצירת קשר</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">נשמע מעניין?</h2>
-            <p class="mt-4 text-slate-400">לשאלות, הצעות, או סתם להכיר, כתבו אלינו. אנו נשמח לשמוע.</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['contact_kicker_he']) ?></p>
+            <h2 class="mt-2 text-3xl font-semibold text-white"><?= htmlspecialchars($site['contact_title_he']) ?></h2>
+            <p class="mt-4 text-slate-400"><?= htmlspecialchars($site['contact_body_he']) ?></p>
           </div>
           <div class="lang-en hidden">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300">Get in touch</p>
-            <h2 class="mt-2 text-3xl font-semibold text-white">Would you like to connect?</h2>
-            <p class="mt-4 text-slate-400">For questions, ideas, or simply to say hello, reach out. We would love to
-              hear from you.</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-teal-300"><?= htmlspecialchars($site['contact_kicker_en']) ?></p>
+            <h2 class="mt-2 text-3xl font-semibold text-white"><?= htmlspecialchars($site['contact_title_en']) ?></h2>
+            <p class="mt-4 text-slate-400"><?= htmlspecialchars($site['contact_body_en']) ?></p>
           </div>
           <div class="mt-6 space-y-3 text-sm text-slate-400">
-            <p>📍 Yitzhak Rabin 5, Apt 11, Kiryat Ono</p>
-            <p>✉️ oz@pozners.com</p>
-            <p>🗓️ Meetings available on request</p>
+            <p class="lang-he"><i class="fa-solid fa-location-dot w-4 text-teal-300"></i> <?= htmlspecialchars($site['address_he']) ?></p>
+            <p class="lang-en hidden"><i class="fa-solid fa-location-dot w-4 text-teal-300"></i> <?= htmlspecialchars($site['address_en']) ?></p>
+            <p><i class="fa-solid fa-envelope w-4 text-teal-300"></i> <?= htmlspecialchars(getenv('CONTACT_EMAIL') ?: '') ?></p>
+            <p class="lang-he"><i class="fa-solid fa-calendar-days w-4 text-teal-300"></i> <?= htmlspecialchars($site['meeting_note_he']) ?></p>
+            <p class="lang-en hidden"><i class="fa-solid fa-calendar-days w-4 text-teal-300"></i> <?= htmlspecialchars($site['meeting_note_en']) ?></p>
           </div>
         </div>
 
@@ -279,7 +300,7 @@ $homeJsonLd = [
               <p class="mt-2 text-sm text-slate-400">Book a short conversation with the family.</p>
             </div>
             <!-- <iframe data-fillout-src="meetingFormUrl" title="Meeting form" class="mt-4 h-[560px] w-full rounded-2xl border-0"></iframe> -->
-            <div style="width:100%;height:500px;" data-fillout-id="7cFLvM7Kezus" data-fillout-embed-type="standard"
+            <div style="width:100%;min-height:500px;" data-fillout-id="7cFLvM7Kezus" data-fillout-embed-type="standard"
               data-fillout-inherit-parameters data-fillout-dynamic-resize></div>
             <script src="https://server.fillout.com/embed/v1/"></script>
 
@@ -292,7 +313,8 @@ $homeJsonLd = [
 
   <footer
     class="border-t border-white/10 px-4 py-8 text-center text-sm text-slate-500 sm:px-6 lg:px-8">
-    <p>© 2026 Pozner Family • Kiryat Ono, Israel</p>
+    <p class="lang-he">© <?= date('Y') ?> <?= htmlspecialchars($site['footer_text_he']) ?></p>
+    <p class="lang-en hidden">© <?= date('Y') ?> <?= htmlspecialchars($site['footer_text_en']) ?></p>
     <p class="mt-2"><a href="admin/" class="text-slate-600 transition hover:text-teal-300">Admin</a></p>
   </footer>
 

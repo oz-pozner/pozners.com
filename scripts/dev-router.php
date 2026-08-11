@@ -26,4 +26,10 @@ if (preg_match('#^/members/([a-zA-Z0-9_-]+)\.html$#', $uri, $m)) {
     return true;
 }
 
+if (preg_match('#^/pages/([a-zA-Z0-9_-]+)\.html$#', $uri, $m)) {
+    $_GET['slug'] = $m[1];
+    require $docRoot . '/pages/view.php';
+    return true;
+}
+
 return false;

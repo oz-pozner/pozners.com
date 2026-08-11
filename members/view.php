@@ -72,6 +72,7 @@ if (!empty($member['contact_email'])) {
       'jsonLd' => $memberJsonLd,
   ]); ?>
   <title><?= htmlspecialchars($memberTitle) ?></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -102,15 +103,15 @@ if (!empty($member['contact_email'])) {
           <h1 class="mt-2 text-4xl font-bold text-white"><?= htmlspecialchars($member['full_name_he'] ?? '') ?></h1>
           <div class="mt-4 text-lg text-slate-400"><?= $member['bio_he'] ?? '' ?></div>
           <div class="mt-6 space-y-3 text-sm text-slate-300">
-            <p><span class="font-semibold text-white">תפקיד:</span> <?= htmlspecialchars($member['role_he'] ?? '') ?></p>
+            <p><i class="fa-solid fa-briefcase w-4 text-teal-300"></i> <span class="font-semibold text-white">תפקיד:</span> <?= htmlspecialchars($member['role_he'] ?? '') ?></p>
             <?php if (!empty($member['interests_he'])): ?>
-            <p><span class="font-semibold text-white">תחומי עניין:</span> <?= htmlspecialchars($member['interests_he']) ?></p>
+            <p><i class="fa-solid fa-star w-4 text-teal-300"></i> <span class="font-semibold text-white">תחומי עניין:</span> <?= htmlspecialchars($member['interests_he']) ?></p>
             <?php endif; ?>
             <?php if (!empty($member['contact_email'])): ?>
-            <p><span class="font-semibold text-white">יצירת קשר:</span> <?= htmlspecialchars($member['contact_email']) ?></p>
+            <p><i class="fa-solid fa-envelope w-4 text-teal-300"></i> <span class="font-semibold text-white">יצירת קשר:</span> <?= htmlspecialchars($member['contact_email']) ?></p>
             <?php endif; ?>
             <?php if (!empty($member['known_contacts'])): ?>
-            <p><span class="font-semibold text-white">אנשי קשר נוספים:</span> <?= htmlspecialchars($member['known_contacts']) ?></p>
+            <p><i class="fa-solid fa-address-book w-4 text-teal-300"></i> <span class="font-semibold text-white">אנשי קשר נוספים:</span> <?= htmlspecialchars($member['known_contacts']) ?></p>
             <?php endif; ?>
           </div>
         </div>
@@ -119,15 +120,15 @@ if (!empty($member['contact_email'])) {
           <h1 class="mt-2 text-4xl font-bold text-white"><?= htmlspecialchars($member['full_name_en'] ?? '') ?></h1>
           <div class="mt-4 text-lg text-slate-400"><?= $member['bio_en'] ?? '' ?></div>
           <div class="mt-6 space-y-3 text-sm text-slate-300">
-            <p><span class="font-semibold text-white">Role:</span> <?= htmlspecialchars($member['role_en'] ?? '') ?></p>
+            <p><i class="fa-solid fa-briefcase w-4 text-teal-300"></i> <span class="font-semibold text-white">Role:</span> <?= htmlspecialchars($member['role_en'] ?? '') ?></p>
             <?php if (!empty($member['interests_en'])): ?>
-            <p><span class="font-semibold text-white">Interests:</span> <?= htmlspecialchars($member['interests_en']) ?></p>
+            <p><i class="fa-solid fa-star w-4 text-teal-300"></i> <span class="font-semibold text-white">Interests:</span> <?= htmlspecialchars($member['interests_en']) ?></p>
             <?php endif; ?>
             <?php if (!empty($member['contact_email'])): ?>
-            <p><span class="font-semibold text-white">Contact:</span> <?= htmlspecialchars($member['contact_email']) ?></p>
+            <p><i class="fa-solid fa-envelope w-4 text-teal-300"></i> <span class="font-semibold text-white">Contact:</span> <?= htmlspecialchars($member['contact_email']) ?></p>
             <?php endif; ?>
             <?php if (!empty($member['known_contacts'])): ?>
-            <p><span class="font-semibold text-white">Known contacts:</span> <?= htmlspecialchars($member['known_contacts']) ?></p>
+            <p><i class="fa-solid fa-address-book w-4 text-teal-300"></i> <span class="font-semibold text-white">Known contacts:</span> <?= htmlspecialchars($member['known_contacts']) ?></p>
             <?php endif; ?>
           </div>
         </div>

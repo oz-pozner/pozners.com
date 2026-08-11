@@ -4,6 +4,7 @@ require_once __DIR__ . '/includes/seo.php';
 
 header('Content-Type: application/xml; charset=UTF-8');
 $members = content_load_members();
+$pages = content_load_pages();
 $base = seo_absolute_url('/');
 ?>
 <?= '<?xml version="1.0" encoding="UTF-8"?>' . "\n" ?>
@@ -16,6 +17,14 @@ $base = seo_absolute_url('/');
     <loc><?= htmlspecialchars($base . 'members/' . $member['slug'] . '.html') ?></loc>
 <?php if (!empty($member['updated_at'])): ?>
     <lastmod><?= htmlspecialchars(date('Y-m-d', strtotime($member['updated_at']))) ?></lastmod>
+<?php endif; ?>
+  </url>
+<?php endforeach; ?>
+<?php foreach ($pages as $page): ?>
+  <url>
+    <loc><?= htmlspecialchars($base . 'pages/' . $page['slug'] . '.html') ?></loc>
+<?php if (!empty($page['updated_at'])): ?>
+    <lastmod><?= htmlspecialchars(date('Y-m-d', strtotime($page['updated_at']))) ?></lastmod>
 <?php endif; ?>
   </url>
 <?php endforeach; ?>

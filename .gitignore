@@ -9,5 +9,12 @@
 .vscode/
 .idea/
 
-# Local dev server logs
+# Logs
+*.log
 scripts/dev-server.log
+
+# Temp files
+*.tmp
+*.temp
+tmp/
+temp/

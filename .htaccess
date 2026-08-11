@@ -5,6 +5,7 @@ RewriteEngine On
 # Preserve old bookmarked/static links after the move to PHP-rendered pages.
 RewriteRule ^index\.html$ index.php [L]
 RewriteRule ^members/([a-zA-Z0-9_-]+)\.html$ members/view.php?slug=$1 [L,QSA]
+RewriteRule ^pages/([a-zA-Z0-9_-]+)\.html$ pages/view.php?slug=$1 [L,QSA]
 
 # SEO/AI-crawler endpoints, generated dynamically from content/members.json.
 RewriteRule ^robots\.txt$ robots.php [L]

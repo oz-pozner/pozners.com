@@ -10,7 +10,7 @@ function fail(string $message): void
 {
     admin_session_start();
     $_SESSION['admin_flash'] = $message;
-    header('Location: index.php');
+    header('Location: members.php');
     exit;
 }
 
@@ -35,7 +35,7 @@ if ($nameHe === '' || $nameEn === '') {
 // (and de-duplicated) from user input or the English name when creating.
 if ($isNew) {
     $slugSource = trim($_POST['slug'] ?? '') !== '' ? $_POST['slug'] : $nameEn;
-    $slug = content_slugify($slugSource);
+    $slug = content_slugify($slugSource, 'member');
     $baseSlug = $slug;
     $suffix = 2;
     while (content_find_member($members, $slug)) {
@@ -147,5 +147,5 @@ if (!content_save_members($members)) {
 
 admin_session_start();
 $_SESSION['admin_flash'] = ($isNew ? 'Added ' : 'Updated ') . $nameEn . '.';
-header('Location: index.php');
+header('Location: members.php');
 exit;

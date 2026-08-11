@@ -1,0 +1,108 @@
+# requirements.ai
+
+Compact record of every requirement/feature requested during the AI-assisted build of
+this site, in the order they were asked, plus the architecture decisions made along the
+way. Kept as a durable reference for why the site is built the way it is — update it
+when new requirements are added in future sessions.
+
+## Starting point
+
+Static bilingual (Hebrew/English) HTML landing page for the Pozner family (Kiryat Ono,
+Israel): `index.html` + one static page per family member, Tailwind CSS via CDN,
+vanilla JS for language toggling and Fillout form embeds. No backend, no build step.
+
+## Requirements, in order requested
+
+1. **Codebase docs** — generate a `CLAUDE.md` for future AI sessions working in this repo.
+
+2. **Admin portal** — turn the static site into something the family can self-serve edit:
+   - Admin login (`PozAdmin` / a set password), able to add/update family members and
+     their profile sub-pages.
+   - Easy way to update/replace member photos.
+   - WYSIWYG editor with Hebrew (RTL) support for editing bios.
+   - Site must support both RTL (Hebrew) and LTR (English) rendering correctly, not
+     just hide/show text in a fixed-direction container.
+   - Auto-translate Hebrew → English whenever a subpage is created or updated.
+   - *Decision:* PHP (no framework/Composer) + flat JSON file storage (`content/*.json`),
+     since IONOS shared hosting was confirmed PHP-only with no database. Translation
+     started on LibreTranslate; switched to **MyMemory** after LibreTranslate's public
+     endpoint began requiring a paid API key mid-build. Admin credentials were initially
+     a bcrypt hash hardcoded in `includes/config.php`.
+
+3. **WYSIWYG links and images** — the bio editor must support inserting hyperlinks and
+   inline images, not just formatted text. Inline images upload to `uploads/content/`
+   rather than embedding base64. Auto-translate skips any bio containing `<img>` (MyMemory
+   isn't HTML-aware and can corrupt tags).
+
+4. **Fix a specific content bug** — make the bare URL `https://www.havipozner.co.il/` in
+   Havi's bio an actual clickable link (both languages).
+
+5. **SEO + "AI summary" metadata** — meta description, Open Graph, Twitter Card, and
+   JSON-LD (`Person`/`WebSite` schema) on every page; dynamically generated
+   `/robots.txt`, `/sitemap.xml`, and `/llms.txt` (the emerging llms.txt convention for
+   AI crawlers/answer engines) driven by the JSON content stores so they never go stale.
+
+6. **Local dev reliability** — a bash script that restarts the local PHP dev server
+   automatically if it crashes (`scripts/dev-server.sh`).
+
+7. **Deployment automation** — a bash script to deploy from git to IONOS
+   (`scripts/deploy.sh`, FTP/FTPS via `lftp`), explicitly **excluding `content/` and
+   `uploads/`** since those are live data edited directly on the server through
+   `/admin`, not through git.
+
+8. **No hardcoded secrets** — admin username/password (and later, FTP deploy
+   credentials) must not live in committed code or be otherwise embedded in "site
+   content." Moved to `.env` (gitignored, uploaded to the server directly, never via
+   git), loaded at runtime by `includes/env.php`. `includes/config.php` and the login
+   flow fail closed if credentials are unset. `.env.example` is the tracked template.
+
+9. **YouTube section** — a looping video player on the home page showing videos from
+   the family's channel (`youtube.com/user/Ozpozner1`, handle `@PoznerPuzzles`).
+   Resolved the real channel ID via the channel's public RSS feed and embedded its
+   auto-generated "uploads" playlist (no API key needed).
+
+10. **Git workflow** — commit and push changes to `origin/main` (requested explicitly
+    each time; never committed proactively).
+
+11. **Housekeeping** — `.gitignore` should cover logs and temp files generally
+    (`*.log`, `*.tmp`/`*.temp`, `tmp/`/`temp/`), not just one specific file.
+
+12. **Mobile-friendly local testing** — the dev server should listen on all network
+    interfaces (`0.0.0.0`), not just `localhost`, so it's reachable from a phone on the
+    same Wi-Fi; print the LAN IP on startup.
+
+13. **Responsive design + icons** — audit and fix mobile/cross-browser support (found
+    and fixed a real gap: the header nav had no mobile fallback at all — hamburger menu
+    added); integrate Font Awesome and use it meaningfully (contact icons, YouTube
+    brand icon, member profile field icons), not just import it unused.
+
+14. **Full-site admin + generic sub-pages + this document** (current):
+    - Expand `/admin` beyond family members to edit the *entire* home page's content
+      (hero, address, family section, video channel, about, contact, footer) — backed
+      by a new `content/site.json` singleton, editable via `admin/site.php`.
+    - Add a generic **custom sub-pages** feature (beyond member profiles) so the family
+      can create arbitrary pages (e.g. "Our Story", a links page) with their own
+      bilingual WYSIWYG body, optional hero image, and optional nav entry — backed by
+      `content/pages.json`, served at `/pages/<slug>.html`, managed via
+      `admin/pages.php` / `page-edit.php` / `page-save.php`.
+    - Restructured `/admin` into a hub (`admin/index.php`) linking to Site Content,
+      Family Members, and Pages, since it's no longer just a member-list app.
+    - This `requirements.ai` file: a compact record of every requirement in this
+      conversation, for future reference.
+
+## Current feature set (summary)
+
+- Bilingual (Hebrew RTL / English LTR) site, fully admin-editable: home page content,
+  family member profiles, and unlimited custom sub-pages.
+- PHP + JSON file storage, no database, no build step, deployed to IONOS shared hosting.
+- Admin portal (`/admin`) with session auth, CSRF protection, Quill WYSIWYG (RTL-aware,
+  links + image upload), photo/image upload with validation, Hebrew→English
+  auto-translate via MyMemory (free, no key).
+- SEO/AI discoverability: meta/OG/Twitter/JSON-LD, `robots.txt`, `sitemap.xml`,
+  `llms.txt`, all generated dynamically from content.
+- Responsive (including a working mobile nav) with Font Awesome icons.
+- Looping YouTube section from the family's channel.
+- No secrets in git — `.env` (gitignored) holds admin credentials, FTP deploy
+  credentials, and site settings.
+- Ops scripts: `scripts/dev-server.sh` (auto-restarting local server, LAN-reachable),
+  `scripts/deploy.sh` (git → IONOS over FTP, never touches live content directories).

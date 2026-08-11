@@ -29,5 +29,29 @@
     });
   }
 
+  const navToggle = document.getElementById('nav-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (navToggle && mobileMenu) {
+    const icon = navToggle.querySelector('i');
+    const closeMenu = () => {
+      mobileMenu.classList.add('hidden');
+      navToggle.setAttribute('aria-expanded', 'false');
+      if (icon) {
+        icon.classList.remove('fa-xmark');
+        icon.classList.add('fa-bars');
+      }
+    };
+    navToggle.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      navToggle.setAttribute('aria-expanded', String(!isOpen));
+      if (icon) {
+        icon.classList.toggle('fa-bars', isOpen);
+        icon.classList.toggle('fa-xmark', !isOpen);
+      }
+    });
+    mobileMenu.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  }
+
   setLanguage(savedLanguage);
 })();

@@ -15,10 +15,15 @@ define('ADMIN_PASSWORD_HASH', getenv('ADMIN_PASSWORD_HASH') ?: '');
 define('BASE_DIR', dirname(__DIR__));
 define('CONTENT_DIR', BASE_DIR . '/content');
 define('MEMBERS_JSON', CONTENT_DIR . '/members.json');
+define('SITE_JSON', CONTENT_DIR . '/site.json');
+define('PAGES_JSON', CONTENT_DIR . '/pages.json');
 define('UPLOADS_DIR', BASE_DIR . '/uploads/members');
 define('UPLOADS_URL_BASE', 'uploads/members');
-// Inline images embedded in a bio via the WYSIWYG editor (as opposed to the
-// one profile photo per member above).
+// Optional hero image per custom sub-page (admin/page-edit.php).
+define('UPLOADS_PAGES_DIR', BASE_DIR . '/uploads/pages');
+define('UPLOADS_PAGES_URL_BASE', 'uploads/pages');
+// Inline images embedded in a bio/body via the WYSIWYG editor (as opposed to
+// the one photo per member/page above).
 define('UPLOADS_CONTENT_DIR', BASE_DIR . '/uploads/content');
 define('UPLOADS_CONTENT_URL_BASE', 'uploads/content');
 

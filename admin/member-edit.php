@@ -44,7 +44,7 @@ $field = fn($key) => htmlspecialchars($m[$key] ?? '');
     <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
       <span class="text-lg font-semibold tracking-wide text-white">Pozner Family Admin</span>
       <div class="flex items-center gap-4">
-        <a href="index.php" class="text-sm text-slate-300 transition hover:text-teal-300">← Members</a>
+        <a href="members.php" class="text-sm text-slate-300 transition hover:text-teal-300">← Members</a>
         <a href="logout.php" class="text-sm text-slate-300 transition hover:text-teal-300">Log out</a>
       </div>
     </nav>
@@ -53,7 +53,7 @@ $field = fn($key) => htmlspecialchars($m[$key] ?? '');
   <main class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
     <h1 class="text-2xl font-bold text-white"><?= $isNew ? 'Add family member' : 'Edit ' . $field('name_en') ?></h1>
 
-    <form method="post" action="save.php" enctype="multipart/form-data" id="member-form" class="mt-6 space-y-8">
+    <form method="post" action="member-save.php" enctype="multipart/form-data" id="member-form" class="mt-6 space-y-8">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>" />
       <input type="hidden" name="original_slug" value="<?= htmlspecialchars($m['slug']) ?>" />
       <input type="hidden" name="bio_he" id="bio_he_input" value="<?= $field('bio_he') ?>" />
@@ -172,7 +172,7 @@ $field = fn($key) => htmlspecialchars($m[$key] ?? '');
       <div class="flex items-center gap-4">
         <button type="submit"
           class="rounded-full bg-teal-400 px-6 py-3 font-medium text-slate-950 transition hover:bg-teal-300">Save</button>
-        <a href="index.php" class="text-sm text-slate-400 transition hover:text-teal-300">Cancel</a>
+        <a href="members.php" class="text-sm text-slate-400 transition hover:text-teal-300">Cancel</a>
       </div>
     </form>
   </main>
